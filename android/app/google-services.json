@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "675846533749",
+    "project_id": "pjtrg-804c3",
+    "storage_bucket": "pjtrg-804c3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675846533749:android:18db7c88ac991a04997e3c",
+        "android_client_info": {
+          "package_name": "com.example.ranking_ground_v1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8myR4OGuZObxfyBhLjBGcHuXnuekLWgw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "ranking-ground-backend-tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Operational scripts for Ranking Ground",
+  "scripts": {
+    "sync:ranks": "node sync_ranks.js",
+    "sync:ranks:cron": "bash run_sync_ranks.sh"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0"
+  }
+}

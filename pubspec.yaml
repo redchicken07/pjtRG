@@ -1,0 +1,48 @@
+name: ranking_ground_v1
+description: A new Flutter project.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0' # Flutter 3.0.0 이상 권장
+
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: ^3.13.1
+  firebase_auth: ^5.5.4
+  cloud_firestore: ^5.6.8
+  flutter_riverpod: ^2.5.1
+  go_router: ^15.1.2 # 라우팅 패키지
+  uuid: ^4.4.0
+
+  cupertino_icons: ^1.0.2
+  intl: ^0.20.2
+  google_mobile_ads: ^5.1.0  # 구글 모바일 광고
+  shared_preferences: ^2.2.3 # '오늘 하루 보지 않기' 기능용
+  
+# Flutter 섹션 시작
+flutter:
+  # 다음 줄은 uses-material-design: true를 활성화합니다.
+  uses-material-design: true # <--- 이 줄과 아래 assets 줄의 들여쓰기를 flutter와 맞춥니다.
+
+  # 앱에 애셋(asset)을 추가하려면 assets 섹션을 추가하세요.
+  # 예시:
+  assets:
+    - assets/background_signup.png
+    - assets/background_login.png
+    - assets/background_home.png
+    - assets/character_idle.png
+    - assets/character_left.png
+    - assets/character_right.png
+    - assets/character_jump.png
+    - assets/character_crouch.png
+    - assets/background_arrows_follow.png 
+    - assets/background_game_ready.png 
+    - assets/background_game_result.png 
+    - assets/background_ranking_school.png
+    - assets/background_ranking_personal.png
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
