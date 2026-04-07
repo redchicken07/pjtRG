@@ -304,36 +304,51 @@ class MemoryMazeNotifier extends StateNotifier<MemoryMazeState> {
       wallHitFeedback: false,
     );
 
-    _startRoundTimer();
+    _startMemoryTimer();
   }
 
-  void _startRoundTimer() {
-    final memoryTotal = state.memoryTimeTotal;
-    final playTotal = state.playTimeTotal;
-    final roundTotal = memoryTotal + playTotal;
-
+  void _startMemoryTimer() {
     _timerStartTime = DateTime.now();
     _phaseTimer = Timer.periodic(timerInterval, (timer) {
       final elapsed =
           DateTime.now().difference(_timerStartTime!).inMilliseconds / 1000.0;
-      final totalLeft = (roundTotal - elapsed).clamp(0.0, 999.0);
-      if (totalLeft <= 0.0) {
+      final left = (state.memoryTimeTotal - elapsed).clamp(0.0, 999.0);
+      if (left <= 0.0) {
+        timer.cancel();
+        _beginPlayPhase();
+      } else {
+        state = state.copyWith(memoryTimeLeft: left);
+      }
+    });
+  }
+
+  void _beginPlayPhase() {
+    _phaseTimer?.cancel();
+    state = state.copyWith(
+      gamePhase: GamePhase.playing,
+      memoryTimeLeft: 0.0,
+      playTimeLeft: state.playTimeTotal,
+    );
+    _startPlayTimer();
+  }
+
+  void startPlayNow() {
+    if (state.gamePhase != GamePhase.memorizing) return;
+    _beginPlayPhase();
+  }
+
+  void _startPlayTimer() {
+    _timerStartTime = DateTime.now();
+    _phaseTimer = Timer.periodic(timerInterval, (timer) {
+      final elapsed =
+          DateTime.now().difference(_timerStartTime!).inMilliseconds / 1000.0;
+      final left = (state.playTimeTotal - elapsed).clamp(0.0, 999.0);
+      if (left <= 0.0) {
         timer.cancel();
         _onRoundFail();
-        return;
+      } else {
+        state = state.copyWith(playTimeLeft: left);
       }
-
-      final inMemorizing = elapsed < memoryTotal;
-      final memoryLeft =
-          inMemorizing ? (memoryTotal - elapsed).clamp(0.0, 999.0) : 0.0;
-      final playElapsed = (elapsed - memoryTotal).clamp(0.0, playTotal);
-      final playLeft = (playTotal - playElapsed).clamp(0.0, 999.0);
-
-      state = state.copyWith(
-        gamePhase: inMemorizing ? GamePhase.memorizing : GamePhase.playing,
-        memoryTimeLeft: memoryLeft,
-        playTimeLeft: playLeft,
-      );
     });
   }
 
@@ -347,10 +362,7 @@ class MemoryMazeNotifier extends StateNotifier<MemoryMazeState> {
   }
 
   void movePlayer(Point<int> delta) {
-    if (state.gamePhase != GamePhase.memorizing &&
-        state.gamePhase != GamePhase.playing) {
-      return;
-    }
+    if (state.gamePhase != GamePhase.playing) return;
     final next = MazePoint(
         state.playerPosition.x + delta.x, state.playerPosition.y + delta.y);
     if (!_isWalkable(next)) {
@@ -361,8 +373,7 @@ class MemoryMazeNotifier extends StateNotifier<MemoryMazeState> {
       _phaseTimer?.cancel();
       final n = state.maze.length;
       final base = (state.round * n * 10).ceil();
-      final remainingTime = state.memoryTimeLeft + state.playTimeLeft;
-      final bonus = (remainingTime * n * state.round).ceil();
+      final bonus = (state.playTimeLeft * n * state.round).ceil();
       state = state.copyWith(
         playerPosition: next,
         score: state.score + base + bonus,

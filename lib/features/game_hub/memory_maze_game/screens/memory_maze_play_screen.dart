@@ -158,6 +158,9 @@ class _MemoryMazePlayScreenState extends ConsumerState<MemoryMazePlayScreen> {
                         ? Colors.red.withAlpha((255 * 0.3).round())
                         : Colors.transparent,
                     child: GestureDetector(
+                      onTap: shellState.gamePhase == GamePhase.memorizing
+                          ? notifier.startPlayNow
+                          : null,
                       onHorizontalDragEnd: (details) {
                         if (details.primaryVelocity != null &&
                             details.primaryVelocity!.abs() > 200) {
@@ -204,12 +207,16 @@ class _HeaderDisplay extends ConsumerWidget {
     final user = ref.watch(userProfileProvider).asData?.value;
     final formatter = NumberFormat('#,###');
     final textTheme = Theme.of(context).textTheme;
-    final totalTime = state.memoryTimeTotal + state.playTimeTotal;
-    final leftTime = state.memoryTimeLeft + state.playTimeLeft;
-    final timerValue = totalTime > 0 ? leftTime / totalTime : 0.0;
+    final timerValue = state.gamePhase == GamePhase.memorizing
+        ? (state.memoryTimeTotal > 0
+            ? state.memoryTimeLeft / state.memoryTimeTotal
+            : 0.0)
+        : (state.playTimeTotal > 0
+            ? state.playTimeLeft / state.playTimeTotal
+            : 0.0);
     final timerText = state.gamePhase == GamePhase.memorizing
-        ? '바로 출발 가능! 총 ${leftTime.toStringAsFixed(1)}초'
-        : '남은 시간 ${leftTime.toStringAsFixed(1)}초';
+        ? '기억 시간 ${state.memoryTimeLeft.toStringAsFixed(1)}초'
+        : '플레이 시간 ${state.playTimeLeft.toStringAsFixed(1)}초';
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -237,6 +244,24 @@ class _HeaderDisplay extends ConsumerWidget {
           const SizedBox(height: 4),
           Text('⏱️ $timerText',
               style: textTheme.titleLarge?.copyWith(fontSize: 18)),
+          const SizedBox(height: 4),
+          Text(
+            '플레이 시간 ${state.playTimeTotal.toStringAsFixed(1)}초',
+            style: textTheme.bodyMedium?.copyWith(color: Colors.black54),
+          ),
+          if (state.gamePhase == GamePhase.memorizing) ...[
+            const SizedBox(height: 10),
+            Text(
+              '미로를 기억했다면 탭하거나 버튼을 눌러 바로 시작할 수 있어요.',
+              textAlign: TextAlign.center,
+              style: textTheme.bodyMedium?.copyWith(color: Colors.black87),
+            ),
+            const SizedBox(height: 8),
+            FilledButton(
+              onPressed: () => ref.read(memoryMazeProvider.notifier).startPlayNow(),
+              child: const Text('바로 시작하기'),
+            ),
+          ],
         ],
       ),
     );
